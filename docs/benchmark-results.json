@@ -1,0 +1,132 @@
+{
+  "rows": [
+    {
+      "algorithm": "AES-256-GCM",
+      "size": 1024,
+      "iterations": 40,
+      "encrypt_ms": 0.00128,
+      "decrypt_ms": 0.00124,
+      "p95_encrypt_ms": 0.00131,
+      "throughput_mbps": 764.43
+    },
+    {
+      "algorithm": "ChaCha20-Poly1305",
+      "size": 1024,
+      "iterations": 40,
+      "encrypt_ms": 0.00166,
+      "decrypt_ms": 0.00162,
+      "p95_encrypt_ms": 0.00169,
+      "throughput_mbps": 587.23
+    },
+    {
+      "algorithm": "AES-256-GCM",
+      "size": 65536,
+      "iterations": 40,
+      "encrypt_ms": 0.0233,
+      "decrypt_ms": 0.02283,
+      "p95_encrypt_ms": 0.04627,
+      "throughput_mbps": 2682.63
+    },
+    {
+      "algorithm": "ChaCha20-Poly1305",
+      "size": 65536,
+      "iterations": 40,
+      "encrypt_ms": 0.03861,
+      "decrypt_ms": 0.03823,
+      "p95_encrypt_ms": 0.0447,
+      "throughput_mbps": 1618.79
+    },
+    {
+      "algorithm": "AES-256-GCM",
+      "size": 1048576,
+      "iterations": 40,
+      "encrypt_ms": 1.07432,
+      "decrypt_ms": 0.95437,
+      "p95_encrypt_ms": 1.25796,
+      "throughput_mbps": 930.82
+    },
+    {
+      "algorithm": "ChaCha20-Poly1305",
+      "size": 1048576,
+      "iterations": 40,
+      "encrypt_ms": 1.34944,
+      "decrypt_ms": 1.03953,
+      "p95_encrypt_ms": 1.56523,
+      "throughput_mbps": 741.05
+    }
+  ],
+  "python": "3.14.4",
+  "platform": "Linux",
+  "machine": "x86_64",
+  "cryptography": "47.0.0",
+  "scope": "In-memory AEAD operations; excludes TCP, handshake, disk, and browser latency.",
+  "warmup": 5,
+  "timestamp": 1791054205.3024845,
+  "openssl": "OpenSSL 3.5.5 27 Jan 2026",
+  "os_release": "6.6.87.2-microsoft-standard-WSL2",
+  "network": [
+    {
+      "algorithm": "AES-256-GCM",
+      "handshake_ms": 5.532,
+      "message_size": 1024,
+      "message_samples": 100,
+      "median_rtt_ms": 0.142,
+      "p95_rtt_ms": 0.2,
+      "files": [
+        {
+          "size": 1024,
+          "runs": 3,
+          "median_transfer_ms": 0.618,
+          "median_throughput_mib_s": 1.58,
+          "hashes_verified": true
+        },
+        {
+          "size": 1048576,
+          "runs": 3,
+          "median_transfer_ms": 6.778,
+          "median_throughput_mib_s": 147.53,
+          "hashes_verified": true
+        },
+        {
+          "size": 104857600,
+          "runs": 3,
+          "median_transfer_ms": 559.877,
+          "median_throughput_mib_s": 178.61,
+          "hashes_verified": true
+        }
+      ]
+    },
+    {
+      "algorithm": "ChaCha20-Poly1305",
+      "handshake_ms": 1.253,
+      "message_size": 1024,
+      "message_samples": 100,
+      "median_rtt_ms": 0.156,
+      "p95_rtt_ms": 0.323,
+      "files": [
+        {
+          "size": 1024,
+          "runs": 3,
+          "median_transfer_ms": 0.813,
+          "median_throughput_mib_s": 1.2,
+          "hashes_verified": true
+        },
+        {
+          "size": 1048576,
+          "runs": 3,
+          "median_transfer_ms": 8.087,
+          "median_throughput_mib_s": 123.66,
+          "hashes_verified": true
+        },
+        {
+          "size": 104857600,
+          "runs": 3,
+          "median_transfer_ms": 602.619,
+          "median_throughput_mib_s": 165.94,
+          "hashes_verified": true
+        }
+      ]
+    }
+  ],
+  "network_scope": "Localhost TCP; includes file hashing, receiver disk writes, and verified acknowledgement; excludes handshake from transfer timings. No plaintext overhead baseline measured."
+}

@@ -1,0 +1,130 @@
+name: securenet-lab
+
+x-app: &app
+  image: securenet-lab:local
+  pull_policy: never
+  init: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  read_only: true
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+
+services:
+  initialize:
+    <<: *app
+    command: ["securenet", "init"]
+    environment:
+      SECURENET_KEYS_DIR: /keys
+      SECURENET_PASSWORD_FILE: /secrets/passphrase
+    volumes:
+      - sender-keys:/keys/sender
+      - receiver-keys:/keys/receiver
+      - identity-secret:/secrets
+    network_mode: none
+    restart: "no"
+
+  receiver:
+    <<: *app
+    command: ["securenet", "receiver", "--host", "0.0.0.0", "--port", "9000"]
+    environment:
+      SECURENET_KEYS_DIR: /keys
+      SECURENET_PASSWORD_FILE: /secrets/passphrase
+    volumes:
+      - receiver-keys:/keys/receiver:ro
+      - identity-secret:/secrets:ro
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /app/.data:size=768m,uid=10001,gid=10001,mode=700
+    networks: [channel]
+    depends_on:
+      initialize:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    mem_limit: 1g
+    pids_limit: 64
+
+  web:
+    <<: *app
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    environment:
+      SECURENET_KEYS_DIR: /keys
+      SECURENET_PASSWORD_FILE: /secrets/passphrase
+      SECURENET_EMBEDDED: "0"
+      SECURENET_RECEIVER_HOST: receiver
+      SECURENET_RECEIVER_PORT: "9000"
+      SECURENET_HTTPS: ${SECURENET_HTTPS:-0}
+      SECURENET_PUBLIC_ORIGIN: ${SECURENET_PUBLIC_ORIGIN:-}
+      SECURENET_ACCOUNTS_DB: /account/data/securenet.db
+      SECURENET_ACCOUNT_SECRET_FILE: /account/secret/master
+      SECURENET_ACCOUNT_STORAGE: /account/storage
+      SECURENET_MAX_FILE_SIZE: ${SECURENET_MAX_FILE_SIZE:-104857600}
+      SECURENET_MAX_FILES_PER_USER: ${SECURENET_MAX_FILES_PER_USER:-100}
+      SECURENET_MAX_STORAGE_PER_USER: ${SECURENET_MAX_STORAGE_PER_USER:-10737418240}
+      # Web is exposed only on host loopback and a private proxy network.
+      SECURENET_TRUSTED_PROXIES: "*"
+    volumes:
+      - sender-keys:/keys/sender:ro
+      - identity-secret:/secrets:ro
+      - account-data:/account/data
+      - account-storage:/account/storage
+      - account-secret:/account/secret
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /app/.data:size=768m,uid=10001,gid=10001,mode=700
+    ports:
+      - "127.0.0.1:${SECURENET_WEB_PORT:-8000}:8000"
+    networks: [channel, edge]
+    depends_on:
+      initialize:
+        condition: service_completed_successfully
+      receiver:
+        condition: service_started
+    restart: unless-stopped
+    mem_limit: 1g
+    pids_limit: 64
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: [live]
+    environment:
+      LAB_DOMAIN: ${LAB_DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [edge]
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  channel:
+    internal: true
+  edge:
+
+volumes:
+  sender-keys:
+  receiver-keys:
+  identity-secret:
+  caddy-data:
+  caddy-config:
+
+  account-data:
+  account-storage:
+  account-secret:

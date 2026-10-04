@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "securenet-lab"
+version = "0.1.0"
+description = "An interactive authenticated-encryption laboratory over real TCP"
+requires-python = ">=3.12"
+dependencies = [
+  "cryptography>=44,<48",
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "python-multipart>=0.0.20,<1",
+  "typer>=0.15,<1",
+  "argon2-cffi>=23.1,<26",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "pytest-cov>=6,<8", "httpx>=0.28,<1"]
+
+[project.scripts]
+securenet = "securenet.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

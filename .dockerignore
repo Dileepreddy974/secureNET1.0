@@ -1,0 +1,12 @@
+.venv
+.data
+.git
+**/__pycache__
+**/node_modules
+frontend/dist
+frontend/test-results
+.pytest_cache
+.coverage
+*.egg-info
+**/*.pem
+.env

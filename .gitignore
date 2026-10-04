@@ -1,0 +1,17 @@
+.venv/
+.data/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+node_modules/
+frontend/dist/
+playwright-report/
+test-results/
+.env
+*.pem
+*.pcap*
+*.egg-info/
+*.tsbuildinfo
