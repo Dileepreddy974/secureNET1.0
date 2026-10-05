@@ -12,7 +12,7 @@ export function EducationLab({ busy, run }: Props) {
   const [result, setResult] = useState<Record<string, string | boolean> | null>(null);
   async function calculate() {
     await run(async () => {
-      const response = await fetch('/api/education/demo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ technique, text, key, shift: Number(shift) }) });
+      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/education/demo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ technique, text, key, shift: Number(shift) }) });
       const data = await response.json(); if (!response.ok) throw new Error(data.detail || 'Educational demo failed.'); setResult(data);
     });
   }
